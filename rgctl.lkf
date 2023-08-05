@@ -1,0 +1,24 @@
+#	LINK COMMAND FILE FOR STM8
+#	Copyright (c) 2020 by COSMIC Software
+#
+
++seg .text -b 0x8080 -n .text		# program start address
++seg .const -a .text -n .const		# constants follow vector
++seg .bsct -b 0x00 -m 0x100		    # zero page start address
++seg .data -b 0x100 -n .data
++seg .bss -a .data -n .bss
++seg .vector -b 0x8000 -m 0x80		# vectors start address
+
+@*                                  # add command line object files
+
+# float and integer library names depend on the model used
+libisl0.sm8
+libm0.sm8
+
+
+#
+# define these symbols if crtsi is used
+#
++def __endzp=@.ubsct			# end of uninitialized zpage
++def __memory=@.bss			    # end of bss segment
++def __stack=0x7ff
