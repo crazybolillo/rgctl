@@ -1,0 +1,8 @@
+compilers:
+  - description: Cosmic Compiler for STM8
+    match-language: C
+    match-compiler-exe: "(.*/)?cxstm8(\\.exe)?"
+    include-dirs:
+      - "${compiler-exe-dir}/hstm8"
+    defines:
+      _asm:

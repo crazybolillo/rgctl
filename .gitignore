@@ -11,6 +11,7 @@
 *.ilk
 *.map
 *.exp
+*.sm8
 
 # Precompiled Headers
 *.gch
@@ -34,6 +35,7 @@
 *.app
 *.i*86
 *.x86_64
+*.hex
 *.hex
 
 # Debug files
