@@ -1,15 +1,19 @@
-AS=castm8
-CC=cxstm8
-CFLAGS=+modsl0 +debug +warn +strict
-CFLAGS+=$(shell command -v cxstm8 | xargs dirname | xargs printf "-i %s/hstm8")
-LD=clnk
+LD = clnk
+AS = castm8
+CC = cxstm8
 
-BUILD_DIR=build
-OBJS=$(addprefix build/, vector.o crtsi0.o rgctl.o)
+INCLUDE := -i src -i vendor/stsw/inc
 
-VPATH = src
+CFLAGS := +modsl0 +debug +warn +strict -dSTM8S105 +split
+CFLAGS += $(INCLUDE)
+CFLAGS += $(shell command -v cxstm8 | xargs dirname | xargs printf "-i %s/hstm8")
 
-.PHONY: all clean
+BUILD_DIR = build
+OBJS = $(addprefix build/, vector.o crtsi0.o rgctl.o stm8s_gpio.o stm8s_clk.o stm8s_flash.o stm8s_tim1.o stm8s_tim3.o)
+
+VPATH = src:vendor/stsw/src
+
+.PHONY: all clean flash
 
 all: $(BUILD_DIR)/rgctl.hex $(BUILD_DIR)/rgctl.elf
 
@@ -33,3 +37,6 @@ $(BUILD_DIR):
 
 clean:
 	rm -dr $(BUILD_DIR)/*
+
+flash:
+	stm8flash -c stlinkv2 -p stm8s105?6 -w build/rgctl.hex

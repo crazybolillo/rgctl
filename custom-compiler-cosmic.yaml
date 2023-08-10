@@ -4,5 +4,9 @@ compilers:
     match-compiler-exe: "(.*/)?cxstm8(\\.exe)?"
     include-dirs:
       - "${compiler-exe-dir}/hstm8"
+      - "${project-path}/vendor/stsw/inc"
     defines:
       _asm:
+      __CSMC__:
+      STM8S105:
+      "@interrupt":
