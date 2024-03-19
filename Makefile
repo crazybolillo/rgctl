@@ -1,6 +1,7 @@
 LD = clnk
 AS = castm8
 CC = cxstm8
+PROGRAMMER ?= stlinkv3
 
 INCLUDE := -i src -i vendor/stsw/inc
 
@@ -39,4 +40,4 @@ clean:
 	rm -dr $(BUILD_DIR)/*
 
 flash:
-	stm8flash -c stlinkv2 -p stm8s105?6 -w build/rgctl.hex
+	stm8flash -c $(PROGRAMMER) -p stm8s105?6 -w build/rgctl.hex

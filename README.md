@@ -5,7 +5,8 @@ control the color and brightness of up to 16 LEDs.
 ## Building
 This project is meant to be built with [COSMIC's STM8 compiler](https://cosmic-software.com/stm8.php). The compiler can
 be obtained for free by filling out the form on their website. If using Linux you can instead download the Eclipse
-plugin, the toolchain is embedded in it as a `.tar.gz` file.
+plugin, the toolchain is embedded in it as a `.tar.gz` file. You will need some 32 bit versions of development
+packages like libc6 in order to use the compiler.
 
 The Makefile provided with the project was built with GNU Make in mind, it is therefore advised to use GNU Make as well.
 No attempt to make this build Windows compatible has been made.

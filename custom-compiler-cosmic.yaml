@@ -9,4 +9,3 @@ compilers:
       _asm:
       __CSMC__:
       STM8S105:
-      "@interrupt":
