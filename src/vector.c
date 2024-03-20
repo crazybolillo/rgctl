@@ -1,12 +1,20 @@
+#include <stm8s.h>
+#include "rgctl.h"
+
 extern void _stext();
 extern void sysTickHandler();
+
+void trapHandler() {
+    GPIO_WriteHigh(GPIOC, GPIO_PIN_5);
+    while (1);
+}
 
 #define NULL 0
 #pragma section const {vector}
 
 void (* const @vector vector_table[32])() = {
     _stext,			// RESET
-    NULL,			// TRAP
+    trapHandler,	// TRAP
     NULL,			// TLI
     NULL,			// AWU
     NULL,			// CLK
@@ -26,7 +34,7 @@ void (* const @vector vector_table[32])() = {
     NULL,			// TIMER 3 CAP
     NULL,			// RESERVED
     NULL,			// RESERVED
-    NULL,			// I2C
+    NULL,		    // I2C
     NULL,			// UART TX
     NULL,			// UART RX
     NULL,			// ADC

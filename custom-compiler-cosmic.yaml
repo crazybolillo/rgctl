@@ -5,6 +5,7 @@ compilers:
     include-dirs:
       - "${compiler-exe-dir}/hstm8"
       - "${project-path}/vendor/stsw/inc"
+      - "${project-path}/vendor/u8x8"
     defines:
       _asm:
       __CSMC__:
