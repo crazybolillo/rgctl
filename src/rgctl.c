@@ -1,6 +1,7 @@
 #include <stm8s.h>
 #include <u8x8.h>
 #include "rgctl.h"
+#include "led1642.h"
 
 
 const uint8_t CPU_CLK_MHZ = 16;
@@ -14,6 +15,8 @@ volatile uint8_t i2c_bytes_left = 0;
 volatile uint8_t *i2c_bytes = NULL;
 
 u8x8_t display;
+
+struct Message message = {0};
 
 _inline void delay_cycles(uint16_t cycles) {
     _asm("nop\n $N:\n decw X\n jrne $L\n nop\n", cycles);
@@ -72,19 +75,7 @@ uint8_t gpio_delay_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
 void setupHardware(void) {
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
-    /**
-     * TIM3 CH1
-     * Generates PWCLK signal for LED1642, 500kHz
-     */
-    GPIO_Init(GPIOD, GPIO_PIN_2, GPIO_MODE_OUT_PP_LOW_SLOW);
-    TIM3_TimeBaseInit(TIM3_PRESCALER_1, 32);
-    TIM3_OC1Init(
-        TIM3_OCMODE_PWM1,
-        TIM3_OUTPUTSTATE_ENABLE,
-        16,
-        TIM3_OCPOLARITY_HIGH
-    );
-    TIM3_Cmd(ENABLE);
+    led1642_init(&message);
 
     /**
      * TIM1 CH3
@@ -117,22 +108,35 @@ void setupHardware(void) {
     /**
      * Pin whose only purpose is to alert that the program has been interrupted by a TRAP ISR.
      */
-    GPIO_Init(GPIOC, GPIO_PIN_5, GPIO_MODE_OUT_PP_LOW_SLOW);
-    GPIO_WriteLow(GPIOC, GPIO_PIN_5);
+    GPIO_Init(GPIOC, GPIO_PIN_7, GPIO_MODE_OUT_PP_LOW_SLOW);
+    GPIO_WriteLow(GPIOC, GPIO_PIN_7);
 }
 
-uint16_t x;
 int main(void) {
     setupHardware();
     _asm("rim");
 
-    u8x8_Setup(&display, u8x8_d_ssd1306_128x64_noname, u8x8_cad_ssd13xx_i2c, i2c_hw_byte_cb, gpio_delay_cb);
-    u8x8_InitDisplay(&display);
-    u8x8_SetPowerSave(&display, 0);
-    u8x8_ClearDisplay(&display);
+//    u8x8_Setup(&display, u8x8_d_ssd1306_128x64_noname, u8x8_cad_ssd13xx_i2c, i2c_hw_byte_cb, gpio_delay_cb);
+//    u8x8_InitDisplay(&display);
+//    u8x8_SetPowerSave(&display, 0);
+//    u8x8_ClearDisplay(&display);
+//
+//    u8x8_SetFont(&display, u8x8_font_courB18_2x3_r);
+//    u8x8_DrawString(&display, 1, 10, "Coracao");
 
-    u8x8_SetFont(&display, u8x8_font_courB18_2x3_r);
-    u8x8_DrawString(&display, 1, 10, "Coracao");
+    // Set CFG-15=1, enables 12 bit PWM counter
+    message.data = 1 << L1642_TWO_BYTES;
+    message.size = L1642_TWO_BYTES;
+    message.latch = L1642_WR_CR_LATCH;
+    led1642_transmit();
+
+    // Turn all outputs ON
+    message.data = L1642_ALL_ONES;
+    message.size = L1642_TWO_BYTES;
+    message.latch = L1642_WR_SW_LATCH;
+    led1642_transmit();
+
+    led1642_set_brightness(1024);
 
 	while(1) {}
 }
