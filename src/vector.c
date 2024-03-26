@@ -3,9 +3,10 @@
 
 extern void _stext();
 extern void sysTickHandler();
+extern void led1642_isr();
 
 void trapHandler() {
-    GPIO_WriteHigh(GPIOC, GPIO_PIN_5);
+    GPIO_WriteHigh(GPIOC, GPIO_PIN_7);
     while (1);
 }
 
@@ -28,7 +29,7 @@ void (* const @vector vector_table[32])() = {
     NULL,			// SPI EOF
     sysTickHandler,	// TIMER 1 OVF
     NULL,			// TIMER 1 CAP
-    NULL,			// TIMER 2 OVF
+    NULL,	        // TIMER 2 OVF
     NULL,			// TIMER 2 CAP
     NULL,			// TIMER 3 OVF
     NULL,			// TIMER 3 CAP
@@ -38,7 +39,7 @@ void (* const @vector vector_table[32])() = {
     NULL,			// UART TX
     NULL,			// UART RX
     NULL,			// ADC
-    NULL,			// TIMER 4 OVF
+    led1642_isr,	// TIMER 4 OVF
     NULL,			// EEPROM ECC
     NULL,			// Reserved
     NULL,			// Reserved

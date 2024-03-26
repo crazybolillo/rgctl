@@ -28,6 +28,8 @@ OBJS = $(addprefix build/, \
 	u8x8_display.o \
 	u8x8_8x8.o \
 	u8x8_d_ssd1306_128x64_noname.o \
+	stm8s_tim4.o \
+	led1642.o \
 )
 
 VPATH = src:vendor/stsw/src:vendor/u8x8
@@ -38,6 +40,7 @@ all: $(BUILD_DIR)/rgctl.hex $(BUILD_DIR)/rgctl.elf
 
 $(BUILD_DIR)/rgctl.elf: $(BUILD_DIR)/rgctl.sm8
 	cvdwarf  -o $@ $<
+	size $@
 
 $(BUILD_DIR)/rgctl.hex: $(BUILD_DIR)/rgctl.sm8
 	chex -fi -o $@ $<
