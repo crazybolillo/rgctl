@@ -73,16 +73,6 @@ void setupHardware(void) {
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
     /**
-     * Flash setup
-     * Activate the required AFR bits on the "Option Byte" to use different peripherals.
-     * AFR2 for PD0 as CCO
-     * AFR6 for PB4 and PB5 to be SCL AND SDA respectively
-     */
-    FLASH_SetProgrammingTime(FLASH_PROGRAMTIME_STANDARD);
-    FLASH_Unlock(FLASH_MEMTYPE_DATA);
-    FLASH_ProgramOptionByte(0x4803, ((1 << 2) | (1 << 6)));
-
-    /**
      * Clock output (CCO) on PD0
      * Output Frequency should be 16MHz (HSI with no prescaler)
      * PD0 must be set as PP output

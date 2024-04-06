@@ -59,3 +59,6 @@ clean:
 
 flash:
 	stm8flash -c $(PROGRAMMER) -p stm8s105?6 -w build/rgctl.hex
+
+unlock:
+	stm8flash -c $(PROGRAMMER) -p stm8s105?6 -u
