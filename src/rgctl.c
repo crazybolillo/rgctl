@@ -73,15 +73,6 @@ void setupHardware(void) {
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
     /**
-     * Clock output (CCO) on PD0
-     * Output Frequency should be 16MHz (HSI with no prescaler)
-     * PD0 must be set as PP output
-     */
-    GPIO_Init(GPIOD, GPIO_PIN_0, GPIO_MODE_OUT_PP_LOW_FAST);
-    CLK_CCOConfig(CLK_OUTPUT_CPU);
-    CLK_CCOCmd(ENABLE);
-
-    /**
      * TIM3 CH1
      * Generates PWCLK signal for LED1642, 500kHz
      */
