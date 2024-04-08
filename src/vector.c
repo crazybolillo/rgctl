@@ -3,6 +3,7 @@
 
 extern void _stext();
 extern void led1642_isr();
+extern void rgb_isr();
 
 void trapHandler() {
     GPIO_WriteHigh(GPIOC, GPIO_PIN_7);
@@ -28,7 +29,7 @@ void (* const @vector vector_table[32])() = {
     NULL,			// SPI EOF
     NULL,	        // TIMER 1 OVF
     NULL,			// TIMER 1 CAP
-    NULL,	        // TIMER 2 OVF
+    rgb_isr,	    // TIMER 2 OVF
     NULL,			// TIMER 2 CAP
     NULL,			// TIMER 3 OVF
     NULL,			// TIMER 3 CAP
