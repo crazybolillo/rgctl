@@ -2,7 +2,6 @@
 #include "rgctl.h"
 
 extern void _stext();
-extern void sysTickHandler();
 extern void led1642_isr();
 
 void trapHandler() {
@@ -27,7 +26,7 @@ void (* const @vector vector_table[32])() = {
     NULL,			// RESERVED
     NULL,			// RESERVED
     NULL,			// SPI EOF
-    sysTickHandler,	// TIMER 1 OVF
+    NULL,	        // TIMER 1 OVF
     NULL,			// TIMER 1 CAP
     NULL,	        // TIMER 2 OVF
     NULL,			// TIMER 2 CAP
