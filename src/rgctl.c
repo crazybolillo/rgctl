@@ -2,7 +2,7 @@
 #include <u8x8.h>
 #include "rgctl.h"
 #include "led1642.h"
-
+#include "rgb.h"
 
 const uint8_t CPU_CLK_MHZ = 16;
 
@@ -70,6 +70,7 @@ void setupHardware(void) {
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
     led1642_init(&message);
+    rgb_init(80, 0, 30);
 
     /**
      * I2C Setup for SSD1306 OLED screen
@@ -111,6 +112,7 @@ int main(void) {
     led1642_transmit();
 
     led1642_set_brightness(1024);
+    rgb_start();
 
 	while(1) {}
 }
