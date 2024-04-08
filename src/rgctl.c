@@ -9,7 +9,6 @@ const uint8_t CPU_CLK_MHZ = 16;
 const uint32_t I2C_SPEED = 100000;
 const uint8_t  I2C_SLAVE_ADDRESS_7 = 0x78;
 
-volatile uint16_t sysTick = 0;
 volatile uint8_t i2c_current = 0;
 volatile uint8_t i2c_bytes_left = 0;
 volatile uint8_t *i2c_bytes = NULL;
@@ -24,11 +23,6 @@ _inline void delay_cycles(uint16_t cycles) {
 
 _inline void delay_us(uint16_t micro) {
     delay_cycles(us_cycles(micro));
-}
-
-isr void sysTickHandler() {
-    sysTick++;
-    TIM1_ClearITPendingBit(TIM1_IT_UPDATE);
 }
 
 uint8_t i2c_hw_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
@@ -76,26 +70,6 @@ void setupHardware(void) {
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
     led1642_init(&message);
-
-    /**
-     * TIM1 CH3
-     * Used for debugging purposes. Should output a 1kHz signal representing the system tick
-     */
-    GPIO_Init(GPIOC, GPIO_PIN_3, GPIO_MODE_OUT_PP_LOW_SLOW);
-    TIM1_TimeBaseInit(16, TIM1_COUNTERMODE_UP, 1000, 0);
-    TIM1_OC3Init(
-        TIM1_OCMODE_PWM1,
-        TIM1_OUTPUTSTATE_ENABLE,
-        TIM1_OUTPUTNSTATE_DISABLE,
-        500,
-        TIM1_OCPOLARITY_HIGH,
-        TIM1_OCNPOLARITY_LOW,
-        TIM1_OCIDLESTATE_RESET,
-        TIM1_OCNIDLESTATE_RESET
-    );
-    TIM1_ITConfig(TIM1_IT_UPDATE, ENABLE);
-    TIM1_CtrlPWMOutputs(ENABLE);
-    TIM1_Cmd(ENABLE);
 
     /**
      * I2C Setup for SSD1306 OLED screen
