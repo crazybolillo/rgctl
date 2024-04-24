@@ -370,7 +370,7 @@ GPIO_TypeDef;
  #define ADC1_CR1_ADON    ((uint8_t)0x01) /*!< A/D Converter on/off mask */
 
  #define ADC1_CR2_EXTTRIG ((uint8_t)0x40) /*!< External trigger enable mask */
- #define ADC1_CR2_EXTSEL  ((uint8_t)0x30) /*!< External event selection mask */
+ #define ADC1_CR2_EXTSEL  ((uint8_t)0x30) /*!< External selection selection mask */
  #define ADC1_CR2_ALIGN   ((uint8_t)0x08) /*!< Data Alignment mask */
  #define ADC1_CR2_SCAN    ((uint8_t)0x02) /*!< Scan mode mask */
 
@@ -424,7 +424,7 @@ GPIO_TypeDef;
  #define ADC2_CR1_ADON    ((uint8_t)0x01) /*!< A/D Converter on/off mask */
 
  #define ADC2_CR2_EXTTRIG ((uint8_t)0x40) /*!< External trigger enable mask */
- #define ADC2_CR2_EXTSEL  ((uint8_t)0x30) /*!< External event selection mask */
+ #define ADC2_CR2_EXTSEL  ((uint8_t)0x30) /*!< External selection selection mask */
  #define ADC2_CR2_ALIGN   ((uint8_t)0x08) /*!< Data Alignment mask */
 
 #endif /* (STM8S208) ||(STM8S207) || defined (STM8S007) || (STM8AF62Ax) || (STM8AF52Ax) */
@@ -618,7 +618,7 @@ typedef struct TIM1_struct
   __IO uint8_t IER;   /*!< interrupt enable register*/
   __IO uint8_t SR1;   /*!< status register 1 */
   __IO uint8_t SR2;   /*!< status register 2 */
-  __IO uint8_t EGR;   /*!< event generation register */
+  __IO uint8_t EGR;   /*!< selection generation register */
   __IO uint8_t CCMR1; /*!< CC mode register 1 */
   __IO uint8_t CCMR2; /*!< CC mode register 2 */
   __IO uint8_t CCMR3; /*!< CC mode register 3 */
@@ -831,7 +831,7 @@ typedef struct TIM2_struct
   __IO uint8_t IER;   /*!< interrupt enable register */
   __IO uint8_t SR1;   /*!< status register 1 */
   __IO uint8_t SR2;   /*!< status register 2 */
-  __IO uint8_t EGR;   /*!< event generation register */
+  __IO uint8_t EGR;   /*!< selection generation register */
   __IO uint8_t CCMR1; /*!< CC mode register 1 */
   __IO uint8_t CCMR2; /*!< CC mode register 2 */
   __IO uint8_t CCMR3; /*!< CC mode register 3 */
@@ -955,7 +955,7 @@ typedef struct TIM3_struct
   __IO uint8_t IER;   /*!< interrupt enable register */
   __IO uint8_t SR1;   /*!< status register 1 */
   __IO uint8_t SR2;   /*!< status register 2 */
-  __IO uint8_t EGR;   /*!< event generation register */
+  __IO uint8_t EGR;   /*!< selection generation register */
   __IO uint8_t CCMR1; /*!< CC mode register 1 */
   __IO uint8_t CCMR2; /*!< CC mode register 2 */
   __IO uint8_t CCER1; /*!< CC enable register 1 */
@@ -1064,7 +1064,7 @@ typedef struct TIM4_struct
 #endif
   __IO uint8_t IER;  /*!< interrupt enable register */
   __IO uint8_t SR1;  /*!< status register 1 */
-  __IO uint8_t EGR;  /*!< event generation register */
+  __IO uint8_t EGR;  /*!< selection generation register */
   __IO uint8_t CNTR; /*!< counter register */
   __IO uint8_t PSCR; /*!< prescaler register */
   __IO uint8_t ARR;  /*!< auto-reload register */
@@ -1264,7 +1264,7 @@ typedef struct TIM6_struct
     __IO uint8_t SMCR; 	/*!< Synchro mode control register */
     __IO uint8_t IER; 	/*!< interrupt enable register  */
     __IO uint8_t SR1; 	/*!< status register 1    */
-    __IO uint8_t EGR; 	/*!< event generation register */
+    __IO uint8_t EGR; 	/*!< selection generation register */
     __IO uint8_t CNTR; 	/*!< counter register  */
     __IO uint8_t PSCR; 	/*!< prescaler register */
     __IO uint8_t ARR; 	/*!< auto-reload register */

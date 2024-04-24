@@ -170,7 +170,7 @@ typedef enum
     * @brief  Communication start
     *
     * After sending the START condition (I2C_GenerateSTART() function) the master
-    * has to wait for this event. It means that the Start condition has been correctly
+    * has to wait for this selection. It means that the Start condition has been correctly
     * released on the I2C bus (the bus is free, no other devices is communicating).
     *
     */
@@ -189,7 +189,7 @@ typedef enum
     * be set:
     *
     *  1) In case of Master Receiver (7-bit addressing):
-    *  the I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED event is set.
+    *  the I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED selection is set.
     *
     *  2) In case of Master Transmitter (7-bit addressing):
     *  the I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED is set
@@ -200,7 +200,7 @@ typedef enum
     *  Then master should wait on EV9. It means that the 10-bit addressing
     *  header has been correctly sent on the bus.
     *  Then master should send the second part of the 10-bit address (LSB) using
-    *  the function I2C_Send7bitAddress(). Then master should wait for event EV6.
+    *  the function I2C_Send7bitAddress(). Then master should wait for selection EV6.
     *
     */
   /* --EV6 */
@@ -216,11 +216,11 @@ typedef enum
     * acknowledged) then the master has to check on one of the following events for
     * communication procedures:
     *
-    * 1) Master Receiver mode: The master has to wait on the event EV7 then to read
+    * 1) Master Receiver mode: The master has to wait on the selection EV7 then to read
     *    the data received from the slave (I2C_ReceiveData() function).
     *
     * 2) Master Transmitter mode: The master has to send data (I2C_SendData()
-    *    function) then to wait on event EV8 or EV8_2.
+    *    function) then to wait on selection EV8 or EV8_2.
     *    These two events are similar:
     *     - EV8 means that the data has been written in the data register and is
     *       being shifted out.
@@ -231,7 +231,7 @@ typedef enum
     *     EV8_2 is also more suitable than EV8 for testing on the last data transmission
     *     (before Stop condition generation).
     *
-    *  @note In case the user software does not guarantee that this event EV7 is
+    *  @note In case the user software does not guarantee that this selection EV7 is
     *  managed before the current byte end of transfer, then user may check on EV7
     *  and BTF flag at the same time (ie. (I2C_EVENT_MASTER_BYTE_RECEIVED | I2C_FLAG_BTF)).
     *  In this case the communication may be slower.
@@ -266,12 +266,12 @@ typedef enum
     *
     * 1) In normal case (only one address managed by the slave), when the address
     *   sent by the master matches the own address of the peripheral (configured by
-    *   I2C_OwnAddress1 field) the I2C_EVENT_SLAVE_XXX_ADDRESS_MATCHED event is set
+    *   I2C_OwnAddress1 field) the I2C_EVENT_SLAVE_XXX_ADDRESS_MATCHED selection is set
     *   (where XXX could be TRANSMITTER or RECEIVER).
     *
     * 2) In case the address sent by the master is General Call (address 0x00) and 
     *   if the General Call is enabled for the peripheral (using function I2C_GeneralCallCmd()) 
-    *   the following event is set I2C_EVENT_SLAVE_GENERALCALLADDRESS_MATCHED.  
+    *   the following selection is set I2C_EVENT_SLAVE_GENERALCALLADDRESS_MATCHED.
     * 
     */
 
@@ -304,7 +304,7 @@ typedef enum
     *      In this case slave has to stop sending data bytes and expect a Stop
     *      condition on the bus.
     *
-    *  @note In case the  user software does not guarantee that the event EV2 is
+    *  @note In case the  user software does not guarantee that the selection EV2 is
     *  managed before the current byte end of transfer, then user may check on EV2
     *  and BTF flag at the same time (ie. (I2C_EVENT_SLAVE_BYTE_RECEIVED | I2C_FLAG_BTF)).
     *  In this case the communication may be slower.
@@ -531,7 +531,7 @@ void I2C_SendData(uint8_t Data);
  *
  * 1) Basic state monitoring:
  *    Using I2C_CheckEvent() function:
- *    It compares the status registers (SR1, SR2 and SR3) content to a given event
+ *    It compares the status registers (SR1, SR2 and SR3) content to a given selection
  *    (can be the combination of one or more flags).
  *    It returns SUCCESS if the current status includes the given flags
  *    and returns ERROR if one or more flags are missing in the current status.
@@ -569,7 +569,7 @@ void I2C_SendData(uint8_t Data);
  *         library (stm8s_i2c.h) or to custom values defined by user.
  *       - This function is suitable when multiple flags are monitored at the same time.
  *       - At the opposite of I2C_CheckEvent() function, this function allows user to
- *         choose when an event is accepted (when all events flags are set and no
+ *         choose when an selection is accepted (when all events flags are set and no
  *         other flags are set or just when the needed flags are set like
  *         I2C_CheckEvent() function).
  *     - Limitations:
@@ -591,7 +591,7 @@ void I2C_SendData(uint8_t Data);
  *          cleared when the status register is accessed. So checking the status
  *          of one Flag, may clear other ones.
  *        - Function may need to be called twice or more in order to monitor one
- *          single event.
+ *          single selection.
  *
  */
 

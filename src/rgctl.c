@@ -5,6 +5,7 @@
 
 #include "led1642.h"
 #include "rgb.h"
+#include "ui.h"
 
 const uint8_t CPU_CLK_MHZ = 16;
 
@@ -18,10 +19,23 @@ volatile uint8_t *i2c_bytes = NULL;
 u8x8_t display;
 
 struct Message message = {0};
+const volatile uint8_t *ui_state;
+uint8_t prev_state, ui_red, ui_green, ui_blue, counter;
+uint8_t *chosen_color;
+
+const int16_t brightness_delta = 32;
+int16_t brightness = 1024;
 
 _inline void delay_cycles(uint16_t cycles) { _asm("nop\n $N:\n decw X\n jrne $L\n nop\n", cycles); }
-
 _inline void delay_us(uint16_t micro) { delay_cycles(us_cycles(micro)); }
+
+/**
+ * Generic helper function to standardize UI delays across the program. Waits for approx. 600 ms.
+ * @return
+ */
+_inline void delay_user(void) {
+    for (counter = 0; counter < 10; counter++) { delay_us(60000); }
+}
 
 uint8_t i2c_hw_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
     switch (msg) {
@@ -67,10 +81,18 @@ uint8_t gpio_delay_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
 }
 
 void setupHardware(void) {
+    _asm("sim");
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
     led1642_init(&message);
-    rgb_init(80, 0, 30);
+    rgb_init(80, 0, 32);
+
+    ui_state = ui_init();
+    prev_state = *ui_state;
+
+    GPIO_Init(GPIOC, GPIO_PIN_4, GPIO_MODE_OUT_PP_LOW_SLOW);
+    GPIO_Init(GPIOC, GPIO_PIN_5, GPIO_MODE_OUT_PP_LOW_SLOW);
+    GPIO_Init(GPIOC, GPIO_PIN_6, GPIO_MODE_OUT_PP_LOW_SLOW);
 
     /**
      * I2C Setup for SSD1306 OLED screen
@@ -84,7 +106,49 @@ void setupHardware(void) {
      * Pin whose only purpose is to alert that the program has been interrupted by a TRAP ISR.
      */
     GPIO_Init(GPIOC, GPIO_PIN_7, GPIO_MODE_OUT_PP_LOW_SLOW);
-    GPIO_WriteLow(GPIOC, GPIO_PIN_7);
+}
+
+void handle_color_encoder() {
+    while (!ui_timeout()) {
+        switch (ui_read_encoder()) {
+            case UI_ENCODER_CLOCKWISE:
+                *chosen_color += 16;
+                break;
+            case UI_ENCODER_COUNTERCLOCK:
+                *chosen_color -= 16;
+                break;
+            default:
+                continue;
+        }
+        ui_reset_timeout();
+        rgb_set(ui_red, ui_green, ui_blue);
+        while ((GPIO_ReadInputData(GPIOC) & 0x06) != 0x06) {}
+        ui_enable_encoder();
+    }
+    ui_stop_timeout();
+}
+
+void handle_brightness_encoder() {
+    rgb_start();
+    while (!ui_timeout()) {
+        switch (ui_read_encoder()) {
+            case UI_ENCODER_CLOCKWISE:
+                brightness += brightness_delta;
+                if (brightness > 4095) { brightness = 4095; }
+                break;
+            case UI_ENCODER_COUNTERCLOCK:
+                brightness -= brightness_delta;
+                if (brightness <= 0) { brightness = brightness_delta; }
+                break;
+            default:
+                continue;
+        }
+        ui_reset_timeout();
+        led1642_set_brightness(brightness);
+        while ((GPIO_ReadInputData(GPIOC) & 0x06) != 0x06) {}
+        ui_enable_encoder();
+    }
+    ui_stop_timeout();
 }
 
 int main(void) {
@@ -110,8 +174,51 @@ int main(void) {
     message.latch = L1642_WR_SW_LATCH;
     led1642_transmit();
 
-    led1642_set_brightness(1024);
+    led1642_set_brightness(brightness);
     rgb_start();
 
-    while (1) {}
+    while (1) {
+        if ((*ui_state == 0) || (*ui_state == prev_state)) { continue; }
+
+        ui_red = rgb_read_red();
+        ui_green = rgb_read_green();
+        ui_blue = rgb_read_blue();
+        switch (*ui_state) {
+            case UI_EVENT_RED_SEL:
+                rgb_set(255, 0, 0);
+                chosen_color = &ui_red;
+                break;
+            case UI_EVENT_GREEN_SEL:
+                rgb_set(0, 255, 0);
+                chosen_color = &ui_green;
+                break;
+            case UI_EVENT_BLUE_SEL:
+                rgb_set(0, 0, 255);
+                chosen_color = &ui_blue;
+                break;
+            case UI_EVENT_BRIGHTNESS_SEL:
+                rgb_off();
+                chosen_color = NULL;
+                break;
+            default:
+                continue;
+        }
+
+        delay_user();
+        rgb_set(ui_red, ui_green, ui_blue);
+        prev_state = *ui_state;
+        ui_enable_click();
+
+        ui_start_timeout();
+        ui_enable_encoder();
+        if (chosen_color != NULL) {
+            handle_color_encoder();
+        } else {
+            handle_brightness_encoder();
+        }
+
+        rgb_off();
+        delay_user();
+        rgb_start();
+    }
 }

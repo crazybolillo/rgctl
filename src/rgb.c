@@ -69,7 +69,7 @@ void rgb_init(uint8_t r, uint8_t g, uint8_t b) {
     GPIO_Init(GPIOB, GREEN_GPIO, GPIO_MODE_OUT_PP_HIGH_SLOW);
     GPIO_Init(GPIOB, BLUE_GPIO, GPIO_MODE_OUT_PP_HIGH_SLOW);
 
-    TIM2_TimeBaseInit(TIM2_PRESCALER_1, 160);
+    TIM2_TimeBaseInit(TIM2_PRESCALER_1, 120);
     TIM2_ITConfig(TIM2_IT_UPDATE, ENABLE);
 }
 
@@ -81,8 +81,17 @@ void rgb_start(void) {
     TIM2_Cmd(ENABLE);
 }
 
-void rgb_red(uint8_t val) { red_lim = val; }
+void rgb_set(uint8_t r, uint8_t g, uint8_t b) {
+    red_lim = r;
+    green_lim = g;
+    blue_lim = b;
+}
 
-void rgb_green(uint8_t val) { green_lim = val; }
+void rgb_off(void) {
+    TIM2_Cmd(DISABLE);
+    GPIO_WriteHigh(GPIOB, RED_GPIO | GREEN_GPIO | BLUE_GPIO);
+}
 
-void rgb_blue(uint8_t val) { blue_lim = val; }
+uint8_t rgb_read_red() { return red_lim; }
+uint8_t rgb_read_green() { return green_lim; }
+uint8_t rgb_read_blue() { return blue_lim; }

@@ -32,6 +32,8 @@ OBJS = $(addprefix build/, \
 	led1642.o \
 	rgb.o \
 	stm8s_tim2.o \
+	ui.o \
+	stm8s_exti.o \
 )
 
 VPATH = src:vendor/stsw/src:vendor/u8x8
