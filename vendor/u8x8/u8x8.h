@@ -362,7 +362,7 @@ struct u8x8_struct
   uint8_t debounce_default_pin_state;
   uint8_t debounce_last_pin_state;
   uint8_t debounce_state;
-  uint8_t debounce_result_msg;	/* result msg or event after debounce */
+  uint8_t debounce_result_msg;	/* result msg or selection after debounce */
 #ifdef U8X8_WITH_USER_PTR
   void *user_ptr;
 #endif

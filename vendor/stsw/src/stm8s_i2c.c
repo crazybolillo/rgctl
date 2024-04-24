@@ -474,7 +474,7 @@ void I2C_SendData(uint8_t Data)
  *
  * 1) Basic state monitoring:
  *    Using I2C_CheckEvent() function:
- *    It compares the status registers (SR1, SR2 and SR3) content to a given event
+ *    It compares the status registers (SR1, SR2 and SR3) content to a given selection
  *    (can be the combination of one or more flags).
  *    It returns SUCCESS if the current status includes the given flags
  *    and returns ERROR if one or more flags are missing in the current status.
@@ -512,7 +512,7 @@ void I2C_SendData(uint8_t Data)
  *         library (stm8s_i2c.h) or to custom values defined by user.
  *       - This function is suitable when multiple flags are monitored at the same time.
  *       - At the opposite of I2C_CheckEvent() function, this function allows user to
- *         choose when an event is accepted (when all events flags are set and no
+ *         choose when an selection is accepted (when all events flags are set and no
  *         other flags are set or just when the needed flags are set like
  *         I2C_CheckEvent() function).
  *     - Limitations:
@@ -534,7 +534,7 @@ void I2C_SendData(uint8_t Data)
  *          cleared when the status register is accessed. So checking the status
  *          of one Flag, may clear other ones.
  *        - Function may need to be called twice or more in order to monitor one
- *          single event.
+ *          single selection.
  *
  *  For detailed description of Events, please refer to section I2C_Events in
  *  stm8s_i2c.h file.
@@ -549,7 +549,7 @@ void I2C_SendData(uint8_t Data)
 /**
   * @brief  Checks whether the last I2C Event is equal to the one passed
   *   as parameter.
-  * @param  I2C_Event: specifies the event to be checked.
+  * @param  I2C_Event: specifies the selection to be checked.
   *   This parameter can be one of the following values:
   *     @arg I2C_EVENT_SLAVE_TRANSMITTER_ADDRESS_MATCHED           : EV1
   *     @arg I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED              : EV1
@@ -572,8 +572,8 @@ void I2C_SendData(uint8_t Data)
   *    I2C_Events in stm8s_i2c.h file.
   *
   * @retval An ErrorStatus enumeration value:
-  * - SUCCESS: Last event is equal to the I2C_EVENT
-  * - ERROR: Last event is different from the I2C_EVENT
+  * - SUCCESS: Last selection is equal to the I2C_EVENT
+  * - ERROR: Last selection is different from the I2C_EVENT
   */
 ErrorStatus I2C_CheckEvent(I2C_Event_TypeDef I2C_Event)
 {
@@ -595,15 +595,15 @@ ErrorStatus I2C_CheckEvent(I2C_Event_TypeDef I2C_Event)
     flag2 = I2C->SR3;
     lastevent = ((uint16_t)((uint16_t)flag2 << (uint16_t)8) | (uint16_t)flag1);
   }
-  /* Check whether the last event is equal to I2C_EVENT */
+  /* Check whether the last selection is equal to I2C_EVENT */
   if (((uint16_t)lastevent & (uint16_t)I2C_Event) == (uint16_t)I2C_Event)
   {
-    /* SUCCESS: last event is equal to I2C_EVENT */
+    /* SUCCESS: last selection is equal to I2C_EVENT */
     status = SUCCESS;
   }
   else
   {
-    /* ERROR: last event is different from I2C_EVENT */
+    /* ERROR: last selection is different from I2C_EVENT */
     status = ERROR;
   }
 
@@ -622,7 +622,7 @@ ErrorStatus I2C_CheckEvent(I2C_Event_TypeDef I2C_Event)
   * @note: For detailed description of Events, please refer to section
   *    I2C_Events in stm8s_i2c.h file.
   *
-  * @retval The last event
+  * @retval The last selection
   *   This parameter can be any of the  @ref I2C_Event_TypeDef enumeration.
   */
 I2C_Event_TypeDef I2C_GetLastEvent(void)
@@ -641,7 +641,7 @@ I2C_Event_TypeDef I2C_GetLastEvent(void)
     flag1 = I2C->SR1;
     flag2 = I2C->SR3;
 
-    /* Get the last event value from I2C status register */
+    /* Get the last selection value from I2C status register */
     lastevent = ((uint16_t)((uint16_t)flag2 << 8) | (uint16_t)flag1);
   }
   /* Return status */
@@ -671,8 +671,8 @@ I2C_Event_TypeDef I2C_GetLastEvent(void)
   *     @arg I2C_FLAG_STOPDETECTION: Stop detection flag (Slave mode)
   *     @arg I2C_FLAG_HEADERSENT: 10-bit header sent flag (Master mode)
   *     @arg I2C_FLAG_TRANSFERFINISHED: Byte transfer finished flag
-  *     @arg I2C_FLAG_ADDRESSSENTMATCHED: Address sent flag (Master mode) “ADSL”
-  *   Address matched flag (Slave mode)”ENDAD”
+  *     @arg I2C_FLAG_ADDRESSSENTMATCHED: Address sent flag (Master mode) ï¿½ADSLï¿½
+  *   Address matched flag (Slave mode)ï¿½ENDADï¿½
   *     @arg I2C_FLAG_STARTDETECTION: Start bit flag (Master mode)
   * @retval The new state of I2C_FLAG (SET or RESET).
   */
@@ -782,8 +782,8 @@ void I2C_ClearFlag(I2C_Flag_TypeDef I2C_FLAG)
   *               - I2C_ITPENDINGBIT_STOPDETECTION: Stop detection flag (Slave mode)
   *               - I2C_ITPENDINGBIT_HEADERSENT: 10-bit header sent flag (Master mode)
   *               - I2C_ITPENDINGBIT_TRANSFERFINISHED: Byte transfer finished flag
-  *               - I2C_ITPENDINGBIT_ADDRESSSENTMATCHED: Address sent flag (Master mode) “ADSL”
-  *                              Address matched flag (Slave mode)“ENDAD”
+  *               - I2C_ITPENDINGBIT_ADDRESSSENTMATCHED: Address sent flag (Master mode) ï¿½ADSLï¿½
+  *                              Address matched flag (Slave mode)ï¿½ENDADï¿½
   *               - I2C_ITPENDINGBIT_STARTDETECTION: Start bit flag (Master mode)
   * @retval The new state of I2C_ITPendingBit
   *   This parameter can be any of the @ref ITStatus enumeration.

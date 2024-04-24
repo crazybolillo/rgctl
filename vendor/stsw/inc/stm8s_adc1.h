@@ -54,11 +54,11 @@ typedef enum
 } ADC1_PresSel_TypeDef;
 
 /**
-  * @brief   ADC1 External conversion trigger event selection
+  * @brief   ADC1 External conversion trigger selection selection
   */
 typedef enum 
 {
-  ADC1_EXTTRIG_TIM   = (uint8_t)0x00, /**< Conversion from Internal TIM1 TRGO event */
+  ADC1_EXTTRIG_TIM   = (uint8_t)0x00, /**< Conversion from Internal TIM1 TRGO selection */
   ADC1_EXTTRIG_GPIO  = (uint8_t)0x10  /**< Conversion from External interrupt on ADC_ETR pin*/
 } ADC1_ExtTrig_TypeDef;
 

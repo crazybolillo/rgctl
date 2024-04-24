@@ -12,8 +12,13 @@ isr void rgb_isr(void);
 
 void rgb_init(uint8_t red, uint8_t green, uint8_t blue);
 void rgb_start(void);
-void rgb_stop(void);
+void rgb_off(void);
 
+void rgb_set(uint8_t red, uint8_t green, uint8_t blue);
 void rgb_red(uint8_t val);
 void rgb_green(uint8_t val);
 void rgb_blue(uint8_t val);
+
+uint8_t rgb_read_red(void);
+uint8_t rgb_read_green(void);
+uint8_t rgb_read_blue(void);

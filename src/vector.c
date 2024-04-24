@@ -5,6 +5,9 @@
 extern void _stext();
 extern void led1642_isr();
 extern void rgb_isr();
+extern void click_isr();
+extern void encoder_isr();
+extern void timeout_isr();
 
 void trapHandler() {
     GPIO_WriteHigh(GPIOC, GPIO_PIN_7);
@@ -23,13 +26,13 @@ void (*const @vector vector_table[32])() = {
     NULL,         // CLK
     NULL,         // EXTI PORTA
     NULL,         // EXTI PORTB
-    NULL,         // EXTI PORTC
+    encoder_isr,  // EXTI PORTC
     NULL,         // EXTI PORTD
-    NULL,         // EXTI PORTE
+    click_isr,    // EXTI PORTE
     NULL,         // RESERVED
     NULL,         // RESERVED
     NULL,         // SPI EOF
-    NULL,         // TIMER 1 OVF
+    timeout_isr,  // TIMER 1 OVF
     NULL,         // TIMER 1 CAP
     rgb_isr,      // TIMER 2 OVF
     NULL,         // TIMER 2 CAP

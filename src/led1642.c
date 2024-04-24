@@ -30,11 +30,11 @@ void led1642_init(struct Message *msg) {
 
     /**
      * TIM3 CH1
-     * Generates PWCLK signal for LED1642, 500kHz
+     * Generates PWCLK signal for LED1642, 2MHz
      */
     GPIO_Init(GPIOD, GPIO_PIN_2, GPIO_MODE_OUT_PP_LOW_SLOW);
-    TIM3_TimeBaseInit(TIM3_PRESCALER_1, 32);
-    TIM3_OC1Init(TIM3_OCMODE_PWM1, TIM3_OUTPUTSTATE_ENABLE, 16, TIM3_OCPOLARITY_HIGH);
+    TIM3_TimeBaseInit(TIM3_PRESCALER_1, 8);
+    TIM3_OC1Init(TIM3_OCMODE_PWM1, TIM3_OUTPUTSTATE_ENABLE, 4, TIM3_OCPOLARITY_HIGH);
     TIM3_Cmd(ENABLE);
 
     /**
