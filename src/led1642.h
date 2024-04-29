@@ -2,6 +2,7 @@
 #define RGCTL_LED1642_H
 
 #include <stm8s.h>
+
 #include "rgctl.h"
 
 #define L1642_WR_SW_LATCH 2
@@ -21,5 +22,4 @@ void led1642_transmit(void);
 void led1642_set_brightness(uint32_t brightness);
 void led1642_isr(void);
 
-
-#endif //RGCTL_LED1642_H
+#endif  // RGCTL_LED1642_H

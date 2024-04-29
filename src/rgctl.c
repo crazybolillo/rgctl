@@ -1,13 +1,15 @@
+#include "rgctl.h"
+
 #include <stm8s.h>
 #include <u8x8.h>
-#include "rgctl.h"
+
 #include "led1642.h"
 #include "rgb.h"
 
 const uint8_t CPU_CLK_MHZ = 16;
 
 const uint32_t I2C_SPEED = 100000;
-const uint8_t  I2C_SLAVE_ADDRESS_7 = 0x78;
+const uint8_t I2C_SLAVE_ADDRESS_7 = 0x78;
 
 volatile uint8_t i2c_current = 0;
 volatile uint8_t i2c_bytes_left = 0;
@@ -17,36 +19,36 @@ u8x8_t display;
 
 struct Message message = {0};
 
-_inline void delay_cycles(uint16_t cycles) {
-    _asm("nop\n $N:\n decw X\n jrne $L\n nop\n", cycles);
-}
+_inline void delay_cycles(uint16_t cycles) { _asm("nop\n $N:\n decw X\n jrne $L\n nop\n", cycles); }
 
-_inline void delay_us(uint16_t micro) {
-    delay_cycles(us_cycles(micro));
-}
+_inline void delay_us(uint16_t micro) { delay_cycles(us_cycles(micro)); }
 
 uint8_t i2c_hw_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
-    switch(msg) {
+    switch (msg) {
         case U8X8_MSG_BYTE_SEND:
             i2c_current = 0;
             i2c_bytes_left = arg_int;
             i2c_bytes = arg_ptr;
             while (i2c_current < i2c_bytes_left) {
                 I2C->DR = i2c_bytes[i2c_current++];
-                while (!(I2C->SR1 & I2C_SR1_TXE));
+                while (!(I2C->SR1 & I2C_SR1_TXE))
+                    ;
             }
             break;
         case U8X8_MSG_BYTE_START_TRANSFER:
             I2C->CR2 |= I2C_CR2_START;
-            while (!(I2C->SR1 & I2C_SR1_SB));
+            while (!(I2C->SR1 & I2C_SR1_SB))
+                ;
 
             I2C->DR = I2C_SLAVE_ADDRESS_7;
-            while (!(I2C->SR1 & I2C_SR1_ADDR));
+            while (!(I2C->SR1 & I2C_SR1_ADDR))
+                ;
             (void)I2C->SR3;
             break;
         case U8X8_MSG_BYTE_END_TRANSFER:
             I2C->CR2 |= I2C_CR2_STOP;
-            while (I2C->SR3 & I2C_SR3_MSL);
+            while (I2C->SR3 & I2C_SR3_MSL)
+                ;
             break;
         case U8X8_MSG_BYTE_INIT:
         case U8X8_MSG_BYTE_SET_DC:
@@ -59,9 +61,7 @@ uint8_t i2c_hw_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr
 }
 
 uint8_t gpio_delay_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
-    if (msg == U8X8_MSG_DELAY_MILLI) {
-        delay_us(arg_int * 1000);
-    }
+    if (msg == U8X8_MSG_DELAY_MILLI) { delay_us(arg_int * 1000); }
 
     return 1;
 }
@@ -91,13 +91,12 @@ int main(void) {
     setupHardware();
     _asm("rim");
 
-//    u8x8_Setup(&display, u8x8_d_ssd1306_128x64_noname, u8x8_cad_ssd13xx_i2c, i2c_hw_byte_cb, gpio_delay_cb);
-//    u8x8_InitDisplay(&display);
-//    u8x8_SetPowerSave(&display, 0);
-//    u8x8_ClearDisplay(&display);
-//
-//    u8x8_SetFont(&display, u8x8_font_courB18_2x3_r);
-//    u8x8_DrawString(&display, 1, 10, "Coracao");
+    //    u8x8_Setup(&display, u8x8_d_ssd1306_128x64_noname, u8x8_cad_ssd13xx_i2c, i2c_hw_byte_cb,
+    //    gpio_delay_cb); u8x8_InitDisplay(&display); u8x8_SetPowerSave(&display, 0);
+    //    u8x8_ClearDisplay(&display);
+    //
+    //    u8x8_SetFont(&display, u8x8_font_courB18_2x3_r);
+    //    u8x8_DrawString(&display, 1, 10, "Coracao");
 
     // Set CFG-15=1, enables 12 bit PWM counter
     message.data = 1 << L1642_TWO_BYTES;
@@ -114,5 +113,5 @@ int main(void) {
     led1642_set_brightness(1024);
     rgb_start();
 
-	while(1) {}
+    while (1) {}
 }
