@@ -13,29 +13,17 @@ static volatile bool finished_tx = FALSE;
 static volatile bool rising = TRUE;
 static struct Message *message;
 
-_inline static void clock_on(void) {
-    GPIO_WriteHigh(GPIOD, SCLK);
-}
+_inline static void clock_on(void) { GPIO_WriteHigh(GPIOD, SCLK); }
 
-_inline static void clock_off(void) {
-    GPIO_WriteLow(GPIOD, SCLK);
-}
+_inline static void clock_off(void) { GPIO_WriteLow(GPIOD, SCLK); }
 
-_inline static void sdo_on(void) {
-    GPIO_WriteHigh(GPIOD, SDO);
-}
+_inline static void sdo_on(void) { GPIO_WriteHigh(GPIOD, SDO); }
 
-_inline static void sdo_off(void) {
-    GPIO_WriteLow(GPIOD, SDO);
-}
+_inline static void sdo_off(void) { GPIO_WriteLow(GPIOD, SDO); }
 
-_inline static void le_on(void) {
-    GPIO_WriteHigh(GPIOD, LE);
-}
+_inline static void le_on(void) { GPIO_WriteHigh(GPIOD, LE); }
 
-_inline static void le_off(void) {
-    GPIO_WriteLow(GPIOD, LE);
-}
+_inline static void le_off(void) { GPIO_WriteLow(GPIOD, LE); }
 
 void led1642_init(struct Message *msg) {
     message = msg;
@@ -46,12 +34,7 @@ void led1642_init(struct Message *msg) {
      */
     GPIO_Init(GPIOD, GPIO_PIN_2, GPIO_MODE_OUT_PP_LOW_SLOW);
     TIM3_TimeBaseInit(TIM3_PRESCALER_1, 32);
-    TIM3_OC1Init(
-            TIM3_OCMODE_PWM1,
-            TIM3_OUTPUTSTATE_ENABLE,
-            16,
-            TIM3_OCPOLARITY_HIGH
-    );
+    TIM3_OC1Init(TIM3_OCMODE_PWM1, TIM3_OUTPUTSTATE_ENABLE, 16, TIM3_OCPOLARITY_HIGH);
     TIM3_Cmd(ENABLE);
 
     /**
@@ -72,7 +55,8 @@ void led1642_init(struct Message *msg) {
 void led1642_transmit(void) {
     finished_tx = FALSE;
     TIM4_Cmd(ENABLE);
-    while (!finished_tx);
+    while (!finished_tx)
+        ;
 }
 
 void led1642_set_brightness(const uint32_t brightness) {

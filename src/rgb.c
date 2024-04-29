@@ -1,16 +1,8 @@
 #include "rgb.h"
 
-enum {
-    RED_GPIO = GPIO_PIN_1,
-    GREEN_GPIO = GPIO_PIN_2,
-    BLUE_GPIO = GPIO_PIN_3
-};
+enum { RED_GPIO = GPIO_PIN_1, GREEN_GPIO = GPIO_PIN_2, BLUE_GPIO = GPIO_PIN_3 };
 
-enum STATE {
-        RED,
-        GREEN,
-        BLUE
-};
+enum STATE { RED, GREEN, BLUE };
 
 volatile static enum STATE state = RED;
 volatile static uint8_t red, red_lim, green, green_lim, blue, blue_lim;
@@ -43,9 +35,7 @@ isr void rgb_isr(void) {
             if (red >= red_lim) {
                 red = 0;
                 state = GREEN;
-                if (green_lim != 0) {
-                    rgb_green_on();
-                }
+                if (green_lim != 0) { rgb_green_on(); }
             }
             break;
         case GREEN:
@@ -53,9 +43,7 @@ isr void rgb_isr(void) {
             if (green >= green_lim) {
                 green = 0;
                 state = BLUE;
-                if (blue_lim != 0) {
-                    rgb_blue_on();
-                }
+                if (blue_lim != 0) { rgb_blue_on(); }
             }
             break;
         case BLUE:
@@ -63,9 +51,7 @@ isr void rgb_isr(void) {
             if (blue >= blue_lim) {
                 blue = 0;
                 state = RED;
-                if (red_lim != 0) {
-                    rgb_red_on();
-                }
+                if (red_lim != 0) { rgb_red_on(); }
             }
             break;
     }
@@ -90,21 +76,13 @@ void rgb_init(uint8_t r, uint8_t g, uint8_t b) {
 void rgb_start(void) {
     red = green = blue = 0;
     state = RED;
-    if (red_lim != 0) {
-        rgb_red_on();
-    }
+    if (red_lim != 0) { rgb_red_on(); }
 
     TIM2_Cmd(ENABLE);
 }
 
-void rgb_red(uint8_t val) {
-    red_lim = val;
-}
+void rgb_red(uint8_t val) { red_lim = val; }
 
-void rgb_green(uint8_t val) {
-    green_lim = val;
-}
+void rgb_green(uint8_t val) { green_lim = val; }
 
-void rgb_blue(uint8_t val) {
-    blue_lim = val;
-}
+void rgb_blue(uint8_t val) { blue_lim = val; }
