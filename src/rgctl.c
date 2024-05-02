@@ -22,9 +22,16 @@ struct Message message = {0};
 const volatile uint8_t *ui_state;
 uint8_t prev_state, ui_red, ui_green, ui_blue, counter;
 uint8_t *chosen_color;
+uint32_t chosen_color_addr;
 
-const int16_t brightness_delta = 32;
-int16_t brightness = 1024;
+const uint16_t brightness_delta = 32;
+uint16_t brightness;
+
+const uint32_t flash_red_addr = FLASH_DATA_START_PHYSICAL_ADDRESS;
+const uint32_t flash_green_addr = flash_red_addr + 1;
+const uint32_t flash_blue_addr = flash_green_addr + 1;
+const uint32_t flash_bright_addr_high = flash_blue_addr + 1;
+const uint32_t flash_bright_addr_low = flash_bright_addr_high + 1;
 
 _inline void delay_cycles(uint16_t cycles) { _asm("nop\n $N:\n decw X\n jrne $L\n nop\n", cycles); }
 _inline void delay_us(uint16_t micro) { delay_cycles(us_cycles(micro)); }
@@ -84,8 +91,33 @@ void setupHardware(void) {
     _asm("sim");
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
+    FLASH_SetProgrammingTime(FLASH_PROGRAMTIME_STANDARD);
+    FLASH_Unlock(FLASH_MEMTYPE_DATA);
+
+    ui_red = FLASH_ReadByte(flash_red_addr);
+    ui_red -= ui_red % 16;
+
+    ui_green = FLASH_ReadByte(flash_green_addr);
+    ui_green -= ui_green % 16;
+
+    ui_blue = FLASH_ReadByte(flash_blue_addr);
+    ui_blue -= ui_blue % 16;
+    if ((ui_red == 0) && (ui_green == 0) && (ui_blue == 0)) {
+        ui_red = 80;
+        ui_blue = 32;
+    }
+
+    brightness = FLASH_ReadByte(flash_bright_addr_high);
+    brightness = (int16_t)(brightness << 8);
+    brightness |= FLASH_ReadByte(flash_bright_addr_low);
+    if (brightness > 4095) {
+        brightness = 4095;
+    } else if (brightness == 0) {
+        brightness = brightness_delta;
+    }
+
     led1642_init(&message);
-    rgb_init(80, 0, 32);
+    rgb_init(ui_red, ui_green, ui_blue);
 
     ui_state = ui_init();
     prev_state = *ui_state;
@@ -126,6 +158,10 @@ void handle_color_encoder() {
         ui_enable_encoder();
     }
     ui_stop_timeout();
+    ui_stop_timeout();
+    if ((chosen_color_addr >= flash_red_addr) && (chosen_color_addr <= flash_blue_addr)) {
+        FLASH_ProgramByte(chosen_color_addr, *chosen_color);
+    }
 }
 
 void handle_brightness_encoder() {
@@ -138,7 +174,7 @@ void handle_brightness_encoder() {
                 break;
             case UI_ENCODER_COUNTERCLOCK:
                 brightness -= brightness_delta;
-                if (brightness <= 0) { brightness = brightness_delta; }
+                if (brightness == 0) { brightness = brightness_delta; }
                 break;
             default:
                 continue;
@@ -149,6 +185,8 @@ void handle_brightness_encoder() {
         ui_enable_encoder();
     }
     ui_stop_timeout();
+    FLASH_ProgramByte(flash_bright_addr_high, brightness >> 8);
+    FLASH_ProgramByte(flash_bright_addr_low, brightness);
 }
 
 int main(void) {
@@ -187,14 +225,17 @@ int main(void) {
             case UI_EVENT_RED_SEL:
                 rgb_set(255, 0, 0);
                 chosen_color = &ui_red;
+                chosen_color_addr = flash_red_addr;
                 break;
             case UI_EVENT_GREEN_SEL:
                 rgb_set(0, 255, 0);
                 chosen_color = &ui_green;
+                chosen_color_addr = flash_green_addr;
                 break;
             case UI_EVENT_BLUE_SEL:
                 rgb_set(0, 0, 255);
                 chosen_color = &ui_blue;
+                chosen_color_addr = flash_blue_addr;
                 break;
             case UI_EVENT_BRIGHTNESS_SEL:
                 rgb_off();
